@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import NavBar from "@/components/NavBar";
-import MapBox from "@/components/MapBox";
-import SignInView from "@/components/views/SingInView";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -25,7 +22,6 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  modal,
 }: Readonly<{
   children: React.ReactNode;
   modal: React.ReactNode;
@@ -42,19 +38,7 @@ export default function RootLayout({
         figtree.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">
-        <div className="fixed inset-0 z-0">
-          <MapBox />
-        </div>
-        <main className="relative z-10 h-full w-full pointer-events-none ">
-          {children}
-
-          {/* sign in component checks for changes to the URL, upon page refresh it mounts if reqAuth = true*/}
-          <SignInView />
-          {modal}
-        </main>
-        <NavBar />
-      </body>
+      <body className="min-h-full flex flex-col"> {children}</body>
     </html>
   );
 }
