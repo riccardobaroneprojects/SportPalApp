@@ -1,3 +1,5 @@
+// nav bar items interface
+
 import { ElementType } from "react";
 
 export interface NavItem {

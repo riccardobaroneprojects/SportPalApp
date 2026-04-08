@@ -4,10 +4,10 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface SearchBarProps {
-  onFilterClick?: () => void;
+  HandleFilterClick?: () => void;
 }
 
-export default function SearchBar({ onFilterClick }: SearchBarProps) {
+export default function SearchBar({ HandleFilterClick }: SearchBarProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -31,7 +31,8 @@ export default function SearchBar({ onFilterClick }: SearchBarProps) {
 
         {/* Filter Button */}
         <motion.button
-          onClick={onFilterClick}
+          // HandleFilterClick passed down buy main page
+          onClick={HandleFilterClick}
           whileTap={{ scale: 0.95 }}
           className="flex items-center justify-center h-full px-4 text-primary hover:bg-primary/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >

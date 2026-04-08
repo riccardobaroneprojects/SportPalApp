@@ -6,22 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
-import { FilterPanelProps, FilterState } from "@/types/SearchFilters";
+import { FilterPanelProps } from "@/types/SearchFilters";
 import { sportOptions, availabilityOptions } from "@/constants/SearchFilters";
 
 export default function FilterPanel({
+  filters,
+  setFilters,
   isOpen,
   onClose,
-  onApply,
   onReset,
 }: FilterPanelProps) {
-  const [filters, setFilters] = useState<FilterState>({
-    sportTypes: [],
-    distance: 10,
-    availability: [],
-  });
-
+  // HandleToggle function take care of updating the filter state in real time
   const handleSportToggle = (sport: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -40,6 +35,7 @@ export default function FilterPanel({
     }));
   };
 
+  // sets filters back to default
   const handleReset = () => {
     setFilters({
       sportTypes: [],
@@ -50,7 +46,6 @@ export default function FilterPanel({
   };
 
   const handleApply = () => {
-    onApply?.(filters);
     onClose();
   };
 

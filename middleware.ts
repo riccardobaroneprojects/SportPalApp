@@ -19,8 +19,8 @@ if (pathname.startsWith("/profile") || pathname.startsWith("/chat")) {
 export const config = {
   matcher: [
     "/profile/:path*", 
-    "/testPage/:path*", 
-    "/chat/:path*",
-    "/this/:path*",   // add more pages here
+    "/mygames/:path*",
+    
+       // add more pages here
   ],
 };

@@ -1,9 +1,14 @@
 "use client";
 
-import Map from "react-map-gl/mapbox";
+import Map, { Marker } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { FeatureCollection } from "geojson";
 
-export default function MapBox() {
+type Props = {
+  data: FeatureCollection | null;
+};
+
+export default function MapBox({ data }: Props) {
   return (
     <div className="relative h-dvh w-full overflow-hidden">
       <Map
@@ -15,7 +20,21 @@ export default function MapBox() {
         }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         style={{ width: "100%", height: "100%" }}
-      />
+        onLoad={(e) => {
+          const map = e.target;
+
+          map.loadImage("/icons/stadium.png", (err, image) => {
+            if (err || !image) return;
+
+            if (!map.hasImage("stadium")) {
+              map.addImage("stadium", image);
+            }
+          });
+        }}
+      >
+        {/* 📍 Marker */}
+        <Marker longitude={-0.1276} latitude={51.5072} />
+      </Map>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import NavBar from "@/components/NavBar";
-import MapBox from "@/components/MapBox";
-import SignInView from "@/components/views/SingInView";
+import PlayerWrapper from "@/components/layoutWrappers/PlayerWrapper";
+import { Children } from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,17 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-full flex flex-col">
-      <div className="fixed inset-0 z-0">
-        <MapBox />
-      </div>
-      <main className="relative z-10 h-full w-full pointer-events-none ">
-        {children}
-
-        {/* sign in component checks for changes to the URL, upon page refresh it mounts if reqAuth = true*/}
-        <SignInView />
-      </main>
-      <NavBar />
+    <div>
+      <PlayerWrapper children={children} />
     </div>
   );
 }
