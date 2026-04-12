@@ -1,13 +1,16 @@
-"use client";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { X, RotateCcw, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { FilterPanelProps } from "@/types/SearchFilters";
-import { sportOptions, availabilityOptions } from "@/constants/SearchFilters";
+import { FilterPanelProps, FilterState } from "@/types/SearchFilters";
+import {
+  sportOptions,
+  ageOptions,
+  skillOptions,
+  genderOptions,
+} from "@/constants/SearchFilters";
 
 export default function FilterPanel({
   filters,
@@ -16,37 +19,34 @@ export default function FilterPanel({
   onClose,
   onReset,
 }: FilterPanelProps) {
-  // HandleToggle function take care of updating the filter state in real time
-  const handleSportToggle = (sport: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      sportTypes: prev.sportTypes.includes(sport)
-        ? prev.sportTypes.filter((s) => s !== sport)
-        : [...prev.sportTypes, sport],
-    }));
+  /**
+   * Consolidates all array-based toggles into one function.
+   * key: the property name in the filters state
+   * value: the string to add or remove
+   */
+  const handleToggle = (key: keyof FilterState, value: string) => {
+    setFilters((prev) => {
+      const currentSelection = prev[key] as string[];
+      const newSelection = currentSelection.includes(value)
+        ? currentSelection.filter((item) => item !== value)
+        : [...currentSelection, value];
+
+      return {
+        ...prev,
+        [key]: newSelection,
+      };
+    });
   };
 
-  const handleAvailabilityToggle = (option: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      availability: prev.availability.includes(option)
-        ? prev.availability.filter((a) => a !== option)
-        : [...prev.availability, option],
-    }));
-  };
-
-  // sets filters back to default
   const handleReset = () => {
     setFilters({
       sportTypes: [],
       distance: 10,
-      availability: [],
+      ageGroups: [],
+      skillLevels: [],
+      genders: [],
     });
     onReset?.();
-  };
-
-  const handleApply = () => {
-    onClose();
   };
 
   return (
@@ -57,7 +57,6 @@ export default function FilterPanel({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-background/60 backdrop-blur-sm z-80 pointer-events-auto"
             onClick={onClose}
           />
@@ -78,80 +77,120 @@ export default function FilterPanel({
               <h2 className="text-lg font-semibold text-foreground">Filters</h2>
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground"
               >
                 <X className="size-5" />
-                <span className="sr-only">Close filters</span>
               </button>
             </div>
 
+            {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto px-5 py-4 pb-32">
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-3 block">
+              {/* Sport Types */}
+              <div className="mb-8">
+                <Label className="text-sm font-semibold mb-3 block">
                   Sport Types
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
                   {sportOptions.map((sport) => (
-                    <label
+                    <FilterCard
                       key={sport}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background/50 hover:bg-muted/50 cursor-pointer transition-colors"
-                    >
-                      <Checkbox
-                        checked={filters.sportTypes.includes(sport)}
-                        onCheckedChange={() => handleSportToggle(sport)}
-                      />
-                      <span className="text-sm text-foreground">{sport}</span>
-                    </label>
+                      label={sport}
+                      checked={filters.sportTypes.includes(sport)}
+                      onCheckedChange={() => handleToggle("sportTypes", sport)}
+                    />
                   ))}
                 </div>
               </div>
 
-              <div className="mb-6">
+              {/* Distance Slider */}
+              <div className="mb-8">
                 <div className="flex items-center justify-between mb-3">
-                  <Label className="text-sm font-medium text-foreground">
-                    Distance
-                  </Label>
-                  <span className="text-sm text-primary font-medium">
+                  <Label className="text-sm font-semibold">Distance</Label>
+                  <span className="text-sm text-primary font-bold">
                     {filters.distance} km
                   </span>
                 </div>
                 <Slider
                   value={[filters.distance]}
-                  onValueChange={(value) =>
-                    setFilters((prev) => ({ ...prev, distance: value[0] }))
+                  onValueChange={(v) =>
+                    setFilters((p) => ({ ...p, distance: v[0] }))
                   }
                   max={50}
                   min={1}
                   step={1}
-                  className="w-full"
                 />
-                <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                  <span>1 km</span>
-                  <span>50 km</span>
+              </div>
+
+              {/* Age Group */}
+              <div className="mb-8">
+                <Label className="text-sm font-semibold mb-3 block">
+                  Age Group
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {ageOptions.map((age) => (
+                    <FilterCard
+                      key={age}
+                      label={age}
+                      checked={filters.ageGroups.includes(age)}
+                      onCheckedChange={() => handleToggle("ageGroups", age)}
+                    />
+                  ))}
                 </div>
               </div>
 
-              <div className="mb-6">
-                <Label className="text-sm font-medium text-foreground mb-3 block">
-                  Availability
+              {/* Skill Level */}
+              <div className="mb-8">
+                <Label className="text-sm font-semibold mb-3 block">
+                  Skill Level
                 </Label>
                 <div className="flex flex-col gap-2">
-                  {availabilityOptions.map((option) => (
+                  {skillOptions.map((skill) => (
                     <label
-                      key={option}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background/50 hover:bg-muted/50 cursor-pointer transition-colors"
+                      key={skill.label}
+                      className="flex items-center justify-between p-3 rounded-xl border border-border bg-background/50 hover:bg-muted/50 cursor-pointer"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">
+                          {skill.label}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {skill.desc}
+                        </span>
+                      </div>
+                      <Checkbox
+                        checked={filters.skillLevels.includes(skill.label)}
+                        onCheckedChange={() =>
+                          handleToggle("skillLevels", skill.label)
+                        }
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Gender */}
+              <div className="mb-8">
+                <Label className="text-sm font-semibold mb-3 block">
+                  Gender
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {genderOptions.map((gender) => (
+                    <label
+                      key={gender}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-background/50 hover:bg-muted/50 cursor-pointer"
                     >
                       <Checkbox
-                        checked={filters.availability.includes(option)}
-                        onCheckedChange={() => handleAvailabilityToggle(option)}
+                        checked={filters.genders.includes(gender)}
+                        onCheckedChange={() => handleToggle("genders", gender)}
                       />
-                      <span className="text-sm text-foreground">{option}</span>
+                      <span className="text-sm">{gender}</span>
                     </label>
                   ))}
                 </div>
               </div>
             </div>
 
+            {/* Sticky Footer */}
             <div className="absolute bottom-0 left-0 right-0 px-5 py-4 bg-card/80 backdrop-blur-md border-t border-border">
               <div className="flex gap-3">
                 <Button
@@ -159,15 +198,13 @@ export default function FilterPanel({
                   onClick={handleReset}
                   className="flex-1 h-12 rounded-xl"
                 >
-                  <RotateCcw className="size-4 mr-2" />
-                  Reset
+                  <RotateCcw className="size-4 mr-2" /> Reset
                 </Button>
                 <Button
-                  onClick={handleApply}
-                  className="flex-1 h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground"
+                  onClick={onClose}
+                  className="flex-1 h-12 rounded-xl bg-primary text-primary-foreground"
                 >
-                  <Check className="size-4 mr-2" />
-                  Apply
+                  <Check className="size-4 mr-2" /> Apply
                 </Button>
               </div>
             </div>
@@ -175,5 +212,25 @@ export default function FilterPanel({
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+/**
+ * Reusable helper component for the grid items to keep JSX clean
+ */
+function FilterCard({
+  label,
+  checked,
+  onCheckedChange,
+}: {
+  label: string;
+  checked: boolean;
+  onCheckedChange: () => void;
+}) {
+  return (
+    <label className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background/50 hover:bg-muted/50 cursor-pointer transition-colors">
+      <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
+      <span className="text-sm text-foreground">{label}</span>
+    </label>
   );
 }

@@ -11,5 +11,7 @@ export interface FilterPanelProps {
 export interface FilterState {
   sportTypes: string[];
   distance: number;
-  availability: string[];
+  ageGroups: string[];
+  skillLevels: string[];
+  genders: string[];
 }

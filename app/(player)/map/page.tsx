@@ -3,16 +3,23 @@
 import { useState } from "react";
 import FilterPanel from "@/components/FilterPanelMain";
 import SearchBar from "@/components/SearchBarMain";
-import { FilterPanelProps, FilterState } from "@/types/SearchFilters";
+import { FilterState } from "@/types/SearchFilters";
 
 export default function Home() {
   const defaultFilters: FilterState = {
     sportTypes: [],
     distance: 10,
-    availability: [],
+    ageGroups: [],
+    skillLevels: [],
+    genders: [],
   };
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  /** * Global filter state for the search results.
+   * We lift state here so that both the SearchBar and results list (future)
+   * can stay in sync with the most up to date FilterPanel selections.
+   *
+   */
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
 
   const handleFilterClick = () => {
@@ -21,7 +28,13 @@ export default function Home() {
 
   const handleFilterClose = () => {
     setIsFilterOpen(false);
-    console.log(filters.sportTypes, filters.availability, filters.distance);
+    console.log(
+      filters.sportTypes,
+      filters.distance,
+      filters.ageGroups,
+      filters.skillLevels,
+      filters.genders,
+    );
   };
 
   const handleTabChange = (tabId: string) => {
