@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import PlayerWrapper from "@/components/layoutWrappers/PlayerWrapper";
-import { Children } from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",

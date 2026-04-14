@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { AuthHandler } from "@/lib/AuthHandler";
 import { NavItem, BottomNavProps } from "@/types/Navigation";
 import { NAV_ITEMS } from "@/constants/Navigation";
+import { useRef } from "react";
 
 export default function NavBar({ onTabChange }: BottomNavProps) {
   const router = useRouter();
@@ -40,12 +41,7 @@ export default function NavBar({ onTabChange }: BottomNavProps) {
   };
 
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="fixed bottom-0 left-0 right-0 z-100 w-full bg-card/95 backdrop-blur-md border-t border-border pb-safe select-none"
-    >
+    <nav className="fixed bottom-0 left-0 right-0 z-100 w-full bg-card/95 backdrop-blur-md border-t border-border pb-safe select-none">
       <div className="flex items-center justify-around px-2 pt-2 md:py-3 max-w-md mx-auto">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
@@ -86,6 +82,6 @@ export default function NavBar({ onTabChange }: BottomNavProps) {
           );
         })}
       </div>
-    </motion.nav>
+    </nav>
   );
 }

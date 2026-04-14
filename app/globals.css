@@ -168,7 +168,7 @@
 }
 
 main {
- @apply min-h-screen flex flex-col;; 
+ @apply min-h-screen flex flex-col bg-background;; 
 }
 
 main:has(.h-dvh) {

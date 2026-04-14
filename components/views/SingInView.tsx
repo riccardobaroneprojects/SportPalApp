@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { SiGoogle } from "@icons-pack/react-simple-icons";
+import { FcGoogle } from "react-icons/fc";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,7 +84,8 @@ export default function SignInView() {
               variant="outline"
               className="h-12 w-full rounded-xl border-border bg-card font-semibold active:bg-secondary transition-all"
             >
-              <SiGoogle color="#4285F4" size={18} className="mr-2" /> Google
+              <FcGoogle style={{ minWidth: 20, minHeight: 20 }} /> Sign in with
+              Google
             </Button>
           </div>
 
