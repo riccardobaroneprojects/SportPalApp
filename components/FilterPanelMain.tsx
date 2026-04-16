@@ -69,11 +69,7 @@ export default function FilterPanel({
             className="fixed inset-x-0 top-0 flex flex-col bg-card shadow-2xl z-90 pointer-events-auto"
             style={{ height: "calc(100dvh - 64px)" }}
           >
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
-            </div>
-
-            <div className="flex items-center justify-between px-5 pb-4 border-b border-border">
+            <div className="flex items-center justify-between px-5 pb-4 pt-3 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">Filters</h2>
               <button
                 onClick={onClose}
@@ -84,7 +80,7 @@ export default function FilterPanel({
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 pb-32">
+            <div className="flex-1 overflow-y-auto px-5 py-4 ">
               {/* Sport Types */}
               <div className="mb-8">
                 <Label className="text-sm font-semibold mb-3 block">
@@ -188,10 +184,6 @@ export default function FilterPanel({
                   ))}
                 </div>
               </div>
-            </div>
-
-            {/* Sticky Footer */}
-            <div className="absolute bottom-0 left-0 right-0 px-5 py-4 bg-card/80 backdrop-blur-md border-t border-border">
               <div className="flex gap-3">
                 <Button
                   variant="outline"

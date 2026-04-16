@@ -9,14 +9,6 @@ import { FeatureCollection } from "geojson";
 import { AnimatePresence, motion } from "framer-motion";
 import MapContext from "@/context/MapContext";
 
-// this is needed to animate the page navigation so that it feels like a native app rather than a website
-const pageOrder: Record<string, number> = {
-  "/myGames": 0,
-  "/newGame": 1,
-  "/map": 2,
-  "/profile": 3,
-};
-
 /* this wrapper orchestrates the entire palyer-side app, used becasue we can levearage state lifting through "use client" */
 
 export default function PlayerWrapper({
@@ -27,26 +19,21 @@ export default function PlayerWrapper({
   const [locationData, setLocationData] = useState<FeatureCollection | null>(
     null,
   );
-  const pathname = usePathname();
-  const prevPathname = useRef(pathname);
-
-  const currentIndex = pageOrder[pathname] ?? 0;
-  const prevIndex = pageOrder[prevPathname.current] ?? 0;
-  const direction = currentIndex >= prevIndex ? "right" : "left";
-
-  prevPathname.current = pathname;
   return (
-    <div className="h-dvh flex flex-col">
-      {/* map contxt set up so that componenets can access locationData when they need to provide the map with locations to render */}
+    <div className="h-dvh flex flex-col overflow-hidden">
       <MapContext.Provider value={{ locationData, setLocationData }}>
-        <div className="fixed inset-0 z-0">
+        {/* LAYER 0: The Map (Fixed in background) */}
+        <div className="fixed inset-0 z-0 h-screen w-screen">
           <MapBox data={locationData} />
         </div>
-        <main className="relative z-10 felx1 pointer-events-none">
-          <div className="h-full flex flex-col  ">{children}</div>
-          {/* sign in component checks for changes to the URL, upon page refresh it mounts if reqAuth = true*/}
+
+        {/* LAYER 1: The Content (Scrolls over the map) */}
+        <main className="relative z-10 overflow-y-auto min-h-0 pointer-events-none">
+          {children}
           <SignInView />
         </main>
+
+        {/* LAYER 2: The Navigation (Always on top) */}
         <NavBar />
       </MapContext.Provider>
     </div>

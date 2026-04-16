@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import FilterPanel from "@/components/FilterPanelMain";
 import SearchBar from "@/components/SearchBarMain";
 import { FilterState } from "@/types/SearchFilters";
@@ -42,10 +42,9 @@ export default function Home() {
   };
 
   return (
-    <main className="relative h-dvh w-full overflow-hidden pointer-events-none">
+    <div className="pointer-events-none flex-1 flex flex-col justify-between p-4 ">
       {/* Search Bar with Filter */}
       <SearchBar HandleFilterClick={handleFilterClick} />
-
       {/* Filter Panel (slides up from bottom) */}
       <FilterPanel
         filters={filters}
@@ -56,6 +55,6 @@ export default function Home() {
           console.log("Filters reset");
         }}
       />
-    </main>
+    </div>
   );
 }

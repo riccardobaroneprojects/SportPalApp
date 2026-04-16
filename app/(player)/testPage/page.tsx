@@ -1,7 +1,9 @@
 export default function TestPage() {
   return (
     <main>
-      <div className="">this is a test</div>
+      <div className=" bg-background  h-full pointer-events-auto">
+        this is a test
+      </div>
     </main>
   );
 }

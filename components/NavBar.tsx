@@ -41,8 +41,8 @@ export default function NavBar({ onTabChange }: BottomNavProps) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-100 w-full bg-card/95 backdrop-blur-md border-t border-border pb-safe select-none">
-      <div className="flex items-center justify-around px-2 pt-2 md:py-3 max-w-md mx-auto">
+    <nav className=" fixed bottom-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-md border-t border-border pb-safe">
+      <div className="flex items-center h-20 justify-around px-2 pt-2 md:py-3 max-w-md mx-auto">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = activeTabId === item.id;

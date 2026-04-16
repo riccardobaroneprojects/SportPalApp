@@ -38,7 +38,7 @@ export default function SignInView() {
       {/* 2. The Card */}
       <div
         className={cn(
-          "relative w-full max-w-sm rounded-[2.5rem] border border-border bg-background p-8 shadow-2xl transition-all duration-300 ease-out",
+          "relative w-full max-w-sm rounded-[2.5rem] border bg-background  border-border p-8 shadow-2xl transition-all duration-300 ease-out ",
           isOpen
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-4 scale-95 opacity-0",

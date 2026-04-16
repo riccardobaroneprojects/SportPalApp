@@ -160,7 +160,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
   html {
     @apply font-sans;
@@ -168,7 +168,7 @@
 }
 
 main {
- @apply min-h-screen flex flex-col bg-background;; 
+ @apply min-h-screen flex flex-col;; 
 }
 
 main:has(.h-dvh) {

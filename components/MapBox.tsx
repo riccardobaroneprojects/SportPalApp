@@ -10,7 +10,7 @@ type Props = {
 
 export default function MapBox({ data }: Props) {
   return (
-    <div className="relative h-dvh w-full overflow-hidden">
+    <div className="w-full h-full overflow-hidden">
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         initialViewState={{
