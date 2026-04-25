@@ -1,14 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
-import { motion } from "framer-motion";
+import { Search, SlidersHorizontal, Loader2, MapPin } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SearchBarProps {
+  query: string;
+  setQuery: (val: string) => void;
+  suggestions: any[];
+  isLoading: boolean;
+  onSelect: (item: any) => void;
   HandleFilterClick?: () => void;
 }
 
-export default function SearchBar({ HandleFilterClick }: SearchBarProps) {
+export default function SearchBar({
+  query,
+  setQuery,
+  suggestions,
+  isLoading,
+  onSelect,
+  HandleFilterClick,
+}: SearchBarProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -19,10 +31,16 @@ export default function SearchBar({ HandleFilterClick }: SearchBarProps) {
       <div className="flex items-center h-12 bg-card/95 backdrop-blur-md border border-border shadow-lg rounded-xl overflow-hidden pointer-events-auto">
         {/* Search Input Section */}
         <div className="flex items-center flex-1 h-full px-3">
-          <Search className="size-5 text-muted-foreground shrink-0" />
+          {isLoading ? (
+            <Loader2 className="size-5 text-muted-foreground animate-spin shrink-0" />
+          ) : (
+            <Search className="size-5 text-muted-foreground shrink-0" />
+          )}
           <input
             type="text"
-            placeholder="Search sports, venues, events..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Start by tryping a location..."
             className="flex-1 h-full bg-transparent border-none outline-none px-3 text-foreground placeholder:text-muted-foreground text-sm md:text-base"
           />
         </div>
@@ -41,6 +59,31 @@ export default function SearchBar({ HandleFilterClick }: SearchBarProps) {
           <span className="sr-only">Filter</span>
         </motion.button>
       </div>
+
+      {/* Suggestions List - Added below the main bar */}
+      <AnimatePresence>
+        {suggestions.length > 0 && (
+          <motion.ul
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="w-full bg-card/95 backdrop-blur-md border border-border shadow-xl rounded-xl overflow-hidden pointer-events-auto"
+          >
+            {suggestions.map((item) => (
+              <li
+                key={item.place_id}
+                onClick={() => onSelect(item)}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-primary/5 cursor-pointer transition-colors text-sm border-b border-border last:border-none"
+              >
+                <MapPin className="size-4 text-muted-foreground shrink-0" />
+                <span className="truncate text-foreground font-medium">
+                  {item.display_name}
+                </span>
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

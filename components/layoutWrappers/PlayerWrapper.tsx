@@ -19,12 +19,18 @@ export default function PlayerWrapper({
   const [locationData, setLocationData] = useState<FeatureCollection | null>(
     null,
   );
+  const [mapCenter, setMapCenter] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
   return (
     <div className="h-dvh flex flex-col overflow-hidden">
-      <MapContext.Provider value={{ locationData, setLocationData }}>
+      <MapContext.Provider
+        value={{ locationData, setLocationData, mapCenter, setMapCenter }}
+      >
         {/* LAYER 0: The Map (Fixed in background) */}
         <div className="fixed inset-0 z-0 h-screen w-screen">
-          <MapBox data={locationData} />
+          <MapBox data={locationData} center={mapCenter} />
         </div>
 
         {/* LAYER 1: The Content (Scrolls over the map) */}

@@ -6,6 +6,8 @@ import { FeatureCollection } from "geojson";
 type MapContextType = {
   locationData: FeatureCollection | null;
   setLocationData: (data: FeatureCollection | null) => void;
+  mapCenter: { lat: number; lon: number } | null;
+  setMapCenter: (coords: { lat: number; lon: number } | null) => void;
 };
 
 const MapContext = createContext<MapContextType | null>(null);
