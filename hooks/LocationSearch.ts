@@ -1,56 +1,59 @@
 import { useState, useEffect, useRef } from "react";
 import { fetchLocationSuggestions } from "@/lib/LocationIQ";
-import { useMapContext } from "@/context/MapContext";
+import { CleanLocation, LocationIQResult } from "@/types/location";
+
 
 export function useLocationSearch() {
+  const [query, setQuery] = useState("");
+  // Fix the 'never' error by adding the Type here
+  const [suggestions, setSuggestions] = useState<LocationIQResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<CleanLocation | null>(null);
 
-const [query, setQuery] = useState("");
-const [suggestions, setSuggestions] = useState([]);
-const [isLoading, setIsLoading] = useState(false);
-const [selectedLocation, setSelectedLocation] = useState<{lat: number, lon: number} | null>(null);
+  const isManualSelection = useRef(false);
 
-const { setMapCenter } = useMapContext();
-
-const isManualSelection = useRef(false);
-const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-useEffect(() => {
+  useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
-    
-        if (isManualSelection.current) {
-            isManualSelection.current = false; // Reset it for the next type
-            return;
-        }
+      if (isManualSelection.current) {
+        isManualSelection.current = false;
+        return;
+      }
 
-        if (query.length >= 3) {
-            setIsLoading(true);
-            try {
-                const data = await fetchLocationSuggestions(query);
-                setSuggestions(data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        } else {
-            setSuggestions([]);
+      if (query.length >= 3) {
+        setIsLoading(true);
+        try {
+          const data = await fetchLocationSuggestions(query);
+          setSuggestions(data);
+        } catch (error) {
+          console.error("Search Error:", error);
+          setSuggestions([]);
+        } finally {
+          setIsLoading(false);
         }
-    }, 400); // 400ms delay
+      } else {
+        setSuggestions([]);
+      }
+    }, 400);
 
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  const selectLocation = (item: any) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  // 3. Add the return type CleanLocation here
+  const selectLocation = (item: LocationIQResult): CleanLocation => {
     isManualSelection.current = true;
-    const coords = {
+    
+    const locationObject: CleanLocation = {
+      name: item.display_name, // Your full name
       lat: parseFloat(item.lat),
       lon: parseFloat(item.lon),
+      raw: item
     };
-    setMapCenter(coords);
-    setSelectedLocation(coords);
-    setQuery(item.display_name);
-    setSuggestions([]);  
+
+    setSelectedLocation(locationObject);
+    setQuery(item.display_name); // Updates the input to the full name
+    setSuggestions([]);
+
+    return locationObject;
   };
 
   return {

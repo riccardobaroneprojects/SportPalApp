@@ -15,6 +15,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
+import { useLocationSearch } from "@/hooks/LocationSearch";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function NewGamePage() {
   const router = useRouter();
@@ -22,8 +24,8 @@ export default function NewGamePage() {
     title: "",
     location: "",
     sport: "",
-    ageGroups: [],
     skillLevels: [],
+    ageGroups: [],
     genders: [],
     description: "",
     maxPlayers: 5,
@@ -44,6 +46,9 @@ export default function NewGamePage() {
     console.log("Saving Game State:", formData);
     // Logic for Supabase or API call goes here
   };
+
+  const { query, setQuery, suggestions, isLoading, selectLocation } =
+    useLocationSearch();
 
   return (
     <div className=" flex-1 flex-col bg-background  text-foreground p-4 pb-20 pointer-events-auto">
@@ -84,17 +89,38 @@ export default function NewGamePage() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label htmlFor="location">Location</Label>
             <Input
               id="location"
-              placeholder="Enter court or park name"
+              placeholder="enter city..."
               className="bg-card border-border rounded-full"
-              value={formData.location}
-              onChange={(e) =>
-                setFormData({ ...formData, location: e.target.value })
-              }
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
+            <AnimatePresence>
+              {suggestions.length > 0 && (
+                <motion.ul
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="absolute left-0 right-0 top-[calc(100%-4px)] z-100 bg-card border border-border shadow-2xl rounded-2xl overflow-hidden pointer-events-auto max-h-60 overflow-y-auto"
+                >
+                  {suggestions.map((item) => (
+                    <li
+                      key={item.place_id}
+                      onClick={() => {
+                        const loc = selectLocation(item);
+                        setFormData({ ...formData, location: loc.name });
+                      }}
+                      className="p-4 hover:bg-primary/10 cursor-pointer text-sm border-b border-border last:border-none transition-colors"
+                    >
+                      {item.display_name}
+                    </li>
+                  ))}
+                </motion.ul>
+              )}
+            </AnimatePresence>
           </div>
         </section>
 

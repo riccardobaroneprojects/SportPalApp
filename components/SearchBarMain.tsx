@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { Search, SlidersHorizontal, Loader2, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LocationIQResult } from "@/types/location";
 
 interface SearchBarProps {
   query: string;
   setQuery: (val: string) => void;
-  suggestions: any[];
+  suggestions: LocationIQResult[];
   isLoading: boolean;
   onSelect: (item: any) => void;
   HandleFilterClick?: () => void;
@@ -26,7 +27,7 @@ export default function SearchBar({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="absolute top-4 left-4 right-4 z-10 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl"
+      className="absolute top-9 left-2 right-2 z-10 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-xl"
     >
       <div className="flex items-center h-12 bg-card/95 backdrop-blur-md border border-border shadow-lg rounded-xl overflow-hidden pointer-events-auto">
         {/* Search Input Section */}

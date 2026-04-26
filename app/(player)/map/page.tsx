@@ -5,6 +5,7 @@ import FilterPanel from "@/components/FilterPanelMain";
 import SearchBar from "@/components/SearchBarMain";
 import { FilterState } from "@/types/SearchFilters";
 import { useLocationSearch } from "@/hooks/LocationSearch";
+import { useMapContext } from "@/context/MapContext";
 
 export default function Home() {
   const defaultFilters: FilterState = {
@@ -42,6 +43,11 @@ export default function Home() {
     // Navigation logic will be implemented later
   };
 
+  const { setMapCenter } = useMapContext();
+  const handleSelection = (item: any) => {
+    const location = selectLocation(item); // Update the search data
+    setMapCenter({ lat: location.lat, lon: location.lon }); // Move the map
+  };
   const { query, setQuery, suggestions, isLoading, selectLocation } =
     useLocationSearch();
 
@@ -53,7 +59,7 @@ export default function Home() {
         setQuery={setQuery}
         suggestions={suggestions}
         isLoading={isLoading}
-        onSelect={selectLocation}
+        onSelect={handleSelection}
         HandleFilterClick={handleFilterClick}
       />
       {/* Filter Panel (slides up from bottom) */}

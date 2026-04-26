@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Map, { Marker, MapRef } from "react-map-gl/mapbox";
+import Map, { Marker, MapRef, AttributionControl } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FeatureCollection } from "geojson";
 
@@ -18,7 +18,7 @@ export default function MapBox({ data, center }: Props) {
     if (center && mapRef.current) {
       mapRef.current.flyTo({
         center: [center.lon, center.lat],
-        zoom: 14,
+        zoom: 12,
         duration: 2000,
         essential: true,
       });
@@ -30,10 +30,12 @@ export default function MapBox({ data, center }: Props) {
       <Map
         ref={mapRef}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+        logoPosition="top-right"
+        attributionControl={false}
         initialViewState={{
           longitude: -0.1276,
           latitude: 51.5072,
-          zoom: 13,
+          zoom: 12,
         }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         style={{ width: "100%", height: "100%" }}
@@ -46,6 +48,7 @@ export default function MapBox({ data, center }: Props) {
           });
         }}
       >
+        <AttributionControl position="top-left" style={{ color: "red" }} />
         {/* Only render the marker if we have a searched center */}
         {center && (
           <Marker
