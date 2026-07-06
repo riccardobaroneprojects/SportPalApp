@@ -3,10 +3,8 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { AuthHandler } from "@/lib/AuthHandler";
-import { NavItem, BottomNavProps } from "@/types/Navigation";
-import { NAV_ITEMS } from "@/constants/Navigation";
-import { useRef } from "react";
+import { clientAuthGuard } from "@/Features/auth/Guards";
+import { NavItem, BottomNavProps, NAV_ITEMS } from "./NavBarData";
 
 export default function NavBar({ onTabChange }: BottomNavProps) {
   const router = useRouter();
@@ -33,7 +31,7 @@ export default function NavBar({ onTabChange }: BottomNavProps) {
 
     // if not signed in blocks the redirect
     if (item.requiresAuth) {
-      const userIsSignedIn = AuthHandler(router, pathname, item.href);
+      const userIsSignedIn = clientAuthGuard(router, pathname, item.href);
       if (!userIsSignedIn) return;
     }
 

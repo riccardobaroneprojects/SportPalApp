@@ -1,3 +1,10 @@
+/* called by any location search field,
+generally triggered: 
+- after 3 characters have been typed
+- more than one second has passed since last character was typed
+
+this is intended to act as a location autocomplete feature  */
+
 "use server"
 
 export async function fetchLocationSuggestions(query: string) {

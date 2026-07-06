@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { fetchLocationSuggestions } from "@/lib/LocationIQ";
-import { CleanLocation, LocationIQResult } from "@/types/location";
+import { fetchLocationSuggestions } from "@/app/(player)/services/LocationIQ";
+import { CleanLocation, LocationIQResult } from "@/app/(player)/components/SearchBar/SearchBarData";
 
 
-export function useLocationSearch() {
+export function LocationSearchHook() {
   const [query, setQuery] = useState("");
   // Fix the 'never' error by adding the Type here
   const [suggestions, setSuggestions] = useState<LocationIQResult[]>([]);
@@ -38,19 +38,19 @@ export function useLocationSearch() {
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
 
-  // 3. Add the return type CleanLocation here
+
   const selectLocation = (item: LocationIQResult): CleanLocation => {
     isManualSelection.current = true;
     
     const locationObject: CleanLocation = {
-      name: item.display_name, // Your full name
+      name: item.display_name,
       lat: parseFloat(item.lat),
       lon: parseFloat(item.lon),
       raw: item
     };
 
     setSelectedLocation(locationObject);
-    setQuery(item.display_name); // Updates the input to the full name
+    setQuery(item.display_name);
     setSuggestions([]);
 
     return locationObject;

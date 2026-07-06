@@ -1,4 +1,5 @@
-// re
+
+// 
 export interface LocationIQResult {
   place_id: string;
   display_name: string;
@@ -11,7 +12,7 @@ export interface MapEntity {
   id: string;
   longitude: number;
   latitude: number;
-  type: "venue" | "basketball" | "volleyball";
+  type: string;
   name?: string;
   sport?: string;
 }

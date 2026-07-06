@@ -6,7 +6,7 @@ import {
   ageOptions,
   skillOptions,
   genderOptions,
-} from "@/constants/SearchFilters";
+} from "@player/components/SearchFiltersPanel/SearchFiltersPanelData";
 import { Announcement } from "@/types/announcement";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
-import { useLocationSearch } from "@/hooks/LocationSearch";
+import { LocationSearchHook } from "@/app/(player)/hooks/LocationSearchHook";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function NewGamePage() {
@@ -47,8 +47,7 @@ export default function NewGamePage() {
     // Logic for Supabase or API call goes here
   };
 
-  const { query, setQuery, suggestions, isLoading, selectLocation } =
-    useLocationSearch();
+  const searchHook = LocationSearchHook();
 
   return (
     <div className=" flex-1 flex-col bg-background  text-foreground p-4 pb-20 pointer-events-auto">
@@ -95,22 +94,22 @@ export default function NewGamePage() {
               id="location"
               placeholder="enter city..."
               className="bg-card border-border rounded-full"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={searchHook.query}
+              onChange={(e) => searchHook.setQuery(e.target.value)}
             />
             <AnimatePresence>
-              {suggestions.length > 0 && (
+              {searchHook.suggestions.length > 0 && (
                 <motion.ul
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
                   className="absolute left-0 right-0 top-[calc(100%-4px)] z-100 bg-card border border-border shadow-2xl rounded-2xl overflow-hidden pointer-events-auto max-h-60 overflow-y-auto"
                 >
-                  {suggestions.map((item) => (
+                  {searchHook.suggestions.map((item) => (
                     <li
                       key={item.place_id}
                       onClick={() => {
-                        const loc = selectLocation(item);
+                        const loc = searchHook.selectLocation(item);
                         setFormData({ ...formData, location: loc.name });
                       }}
                       className="p-4 hover:bg-primary/10 cursor-pointer text-sm border-b border-border last:border-none transition-colors"

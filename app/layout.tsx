@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { AuthListener } from "@/features/auth/AuthListener";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-transparent ">
         {" "}
         {children}
+        <AuthListener />
       </body>
     </html>
   );

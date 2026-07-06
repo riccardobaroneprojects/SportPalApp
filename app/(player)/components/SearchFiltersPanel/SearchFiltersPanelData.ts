@@ -1,3 +1,22 @@
+// types and constants for SearchFiltersPanel component
+
+export interface FilterPanelProps {
+  filters: FilterState,
+  setFilters: React.Dispatch<React.SetStateAction<FilterState>>,
+  isOpen: boolean;
+  onClose: () => void;
+  onReset?: () => void;
+}
+
+// used by map page to generate a reference object 
+export interface FilterState {
+  sportTypes: string[];
+  distance: number;
+  ageGroups: string[];
+  skillLevels: string[];
+  genders: string[];
+}
+
 export const sportOptions = [
   "Basketball",
   "Soccer",

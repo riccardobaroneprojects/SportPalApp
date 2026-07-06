@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import { Search, SlidersHorizontal, Loader2, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LocationIQResult } from "@/types/location";
+import { LocationIQResult } from "./SearchBarData";
 
 interface SearchBarProps {
   query: string;

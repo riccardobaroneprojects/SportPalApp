@@ -1,17 +1,16 @@
+// this layoutWrapper is need so that we can use "use client" while the default layout remains SSR
+
 "use client";
 
-import NavBar from "@/components/NavBar";
-import MapBox from "@/components/MapBox";
-import SignInView from "@/components/views/SingInView";
-import { useState, useRef } from "react";
-import { usePathname } from "next/navigation";
+import NavBar from "@/app/(player)/components/NavBar/NavBar";
+import MapBox from "@/app/(player)/components/MapBox/MapBox";
+import { useState } from "react";
 import { FeatureCollection } from "geojson";
-import { AnimatePresence, motion } from "framer-motion";
-import MapContext from "@/context/MapContext";
+import MapContext from "@/app/(player)/context/MapContext";
 
 /* this wrapper orchestrates the entire palyer-side app, used becasue we can levearage state lifting through "use client" */
 
-export default function PlayerWrapper({
+export default function PlayerLayoutWrapper({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -36,7 +35,6 @@ export default function PlayerWrapper({
         {/* LAYER 1: The Content (Scrolls over the map) */}
         <main className="relative z-10 overflow-y-auto min-h-0 pointer-events-none">
           {children}
-          <SignInView />
         </main>
 
         {/* LAYER 2: The Navigation (Always on top) */}

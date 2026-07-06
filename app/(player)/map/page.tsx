@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useContext } from "react";
-import FilterPanel from "@/components/FilterPanelMain";
-import SearchBar from "@/components/SearchBarMain";
-import { FilterState } from "@/types/SearchFilters";
-import { useLocationSearch } from "@/hooks/LocationSearch";
-import { useMapContext } from "@/context/MapContext";
+import FilterPanel from "@player/components/SearchFiltersPanel/SearchFiltersPanel";
+import SearchBar from "@player/components/SearchBar/SearchBar";
+import { FilterState } from "@player/components/SearchFiltersPanel/SearchFiltersPanelData";
+import { LocationSearchHook } from "@/app/(player)/hooks/LocationSearchHook";
+import { useMapContext } from "@/app/(player)/context/MapContext";
 
 export default function Home() {
   const defaultFilters: FilterState = {
@@ -44,21 +44,21 @@ export default function Home() {
   };
 
   const { setMapCenter } = useMapContext();
+  const searchHook = LocationSearchHook();
+
   const handleSelection = (item: any) => {
-    const location = selectLocation(item); // Update the search data
+    const location = searchHook.selectLocation(item); // Update the search data
     setMapCenter({ lat: location.lat, lon: location.lon }); // Move the map
   };
-  const { query, setQuery, suggestions, isLoading, selectLocation } =
-    useLocationSearch();
 
   return (
     <div className="pointer-events-none flex-1 flex flex-col justify-between p-4 ">
       {/* Search Bar with Filter */}
       <SearchBar
-        query={query}
-        setQuery={setQuery}
-        suggestions={suggestions}
-        isLoading={isLoading}
+        query={searchHook.query}
+        setQuery={searchHook.setQuery}
+        suggestions={searchHook.suggestions}
+        isLoading={searchHook.isLoading}
         onSelect={handleSelection}
         HandleFilterClick={handleFilterClick}
       />

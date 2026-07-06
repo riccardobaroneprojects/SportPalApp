@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { FilterPanelProps, FilterState } from "@/types/SearchFilters";
 import {
+  FilterPanelProps,
+  FilterState,
   sportOptions,
   ageOptions,
   skillOptions,
   genderOptions,
-} from "@/constants/SearchFilters";
+} from "./SearchFiltersPanelData";
+import { FilterCard } from "./FilterCard";
 
 export default function FilterPanel({
   filters,
@@ -71,21 +73,16 @@ export default function FilterPanel({
           >
             <div className="flex items-center justify-between px-5 pb-4 pt-3 border-b border-border">
               <h2 className="text-lg font-semibold text-foreground">Filters</h2>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground"
-              >
+              <Button variant={"ghost"} onClick={onClose}>
                 <X className="size-5" />
-              </button>
+              </Button>
             </div>
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto px-5 py-4 ">
               {/* Sport Types */}
               <div className="mb-8">
-                <Label className="text-sm font-semibold mb-3 block">
-                  Sport Types
-                </Label>
+                <Label className="block mb-3">Sport Types</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {sportOptions.map((sport) => (
                     <FilterCard
@@ -101,7 +98,7 @@ export default function FilterPanel({
               {/* Distance Slider */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-3">
-                  <Label className="text-sm font-semibold">Distance</Label>
+                  <Label className="block mb-3">Distance</Label>
                   <span className="text-sm text-primary font-bold">
                     {filters.distance} km
                   </span>
@@ -119,9 +116,7 @@ export default function FilterPanel({
 
               {/* Age Group */}
               <div className="mb-8">
-                <Label className="text-sm font-semibold mb-3 block">
-                  Age Group
-                </Label>
+                <Label className="block mb-3">Age Group</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {ageOptions.map((age) => (
                     <FilterCard
@@ -136,9 +131,7 @@ export default function FilterPanel({
 
               {/* Skill Level */}
               <div className="mb-8">
-                <Label className="text-sm font-semibold mb-3 block">
-                  Skill Level
-                </Label>
+                <Label className="block mb-3">Skill Level</Label>
                 <div className="flex flex-col gap-2">
                   {skillOptions.map((skill) => (
                     <label
@@ -166,9 +159,7 @@ export default function FilterPanel({
 
               {/* Gender */}
               <div className="mb-8">
-                <Label className="text-sm font-semibold mb-3 block">
-                  Gender
-                </Label>
+                <Label className="block mb-3">Gender</Label>
                 <div className="flex flex-wrap gap-2">
                   {genderOptions.map((gender) => (
                     <label
@@ -204,25 +195,5 @@ export default function FilterPanel({
         </>
       )}
     </AnimatePresence>
-  );
-}
-
-/**
- * Reusable helper component for the grid items to keep JSX clean
- */
-function FilterCard({
-  label,
-  checked,
-  onCheckedChange,
-}: {
-  label: string;
-  checked: boolean;
-  onCheckedChange: () => void;
-}) {
-  return (
-    <label className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background/50 hover:bg-muted/50 cursor-pointer transition-colors">
-      <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
-      <span className="text-sm text-foreground">{label}</span>
-    </label>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PlayerWrapper from "@/components/layoutWrappers/PlayerWrapper";
+import PlayerLayoutWrapper from "@/app/(player)/PlayerLayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <div className="">
-      <PlayerWrapper children={children} />
+      <PlayerLayoutWrapper children={children} />
     </div>
   );
 }
