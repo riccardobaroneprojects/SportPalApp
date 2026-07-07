@@ -1,12 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  formEnumOptions,
-  useAnnouncementForm,
-  AnnouncementFormValues,
-} from "./FormSetup";
-import { AnnouncementInsert } from "@/types";
+import { formEnumOptions, useAnnouncementForm } from "./FormSetup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -163,26 +158,25 @@ export default function NewGamePage() {
         {/* --- Section 3: Skill Level --- */}
         <section className="space-y-3">
           <Label className="text-base font-bold tracking-wide">
-            Allowed Skill Levels
+            Allowed Skill Level
           </Label>
-          <div className="space-y-2">
+
+          <div className="flex flex-col space-y-2">
             {formEnumOptions.skill.map((skill) => (
-              <div
+              <button
                 key={skill}
-                role="button"
-                tabIndex={0}
+                type="button"
                 onClick={() =>
                   setValue("skill_level", skill, { shouldValidate: true })
                 }
-                className={`w-full flex items-center justify-between p-4 border rounded-full text-left transition-all ${
+                className={`w-full p-3 rounded-full border text-sm font-medium transition-all ${
                   currentSkill === skill
-                    ? "bg-secondary border-primary/40 text-secondary-foreground font-semibold"
+                    ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card border-border text-foreground active:bg-accent/10"
                 }`}
               >
-                <div className="capitalize text-sm">{skill}</div>
-                <Checkbox checked={currentSkill === skill} />
-              </div>
+                {skill.charAt(0).toUpperCase() + skill.slice(1)}
+              </button>
             ))}
           </div>
 
@@ -198,26 +192,25 @@ export default function NewGamePage() {
           {/* 1. AGE GROUPS SUB-SECTION */}
           <div className="space-y-3">
             <Label className="text-base font-bold tracking-wide">
-              Age Groups
+              Age Group
             </Label>
-            <div className="flex flex-wrap gap-2">
+            {/* Clean 2-column grid to match sports layout */}
+            <div className="grid grid-cols-2 gap-2">
               {formEnumOptions.age.map((age) => (
-                <div
+                <button
                   key={age}
-                  role="button"
-                  tabIndex={0}
+                  type="button"
                   onClick={() => setValue("age", age, { shouldValidate: true })}
-                  className={`flex items-center space-x-2 border px-3 py-2 rounded-full transition-all text-left ${
+                  className={`p-3 rounded-full border text-sm font-medium transition-all text-center ${
                     currentAge === age
-                      ? "bg-secondary border-primary/40 text-secondary-foreground font-semibold"
+                      ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card border-border text-foreground active:bg-accent/10"
-                  }`}
+                  } last:col-span-2`}
                 >
-                  <Checkbox id={`age-${age}`} checked={currentAge === age} />
-                  <span className="text-sm font-medium capitalize select-none">
-                    {age.replace("_", " - ")}
-                  </span>
-                </div>
+                  {age
+                    .replace("_", " - ")
+                    .replace(/\b\w/g, (c) => c.toUpperCase())}
+                </button>
               ))}
             </div>
             {errors.age && (
@@ -232,29 +225,25 @@ export default function NewGamePage() {
             <Label className="text-base font-bold tracking-wide">
               Inclusivity (Gender)
             </Label>
+            {/* Kept flex wrap so short items can line up side-by-side cleanly */}
             <div className="flex flex-wrap gap-2">
               {formEnumOptions.gender.slice(0, -1).map((gender) => (
-                <div
+                <button
                   key={gender}
-                  role="button"
-                  tabIndex={0}
+                  type="button"
                   onClick={() =>
                     setValue("gender", gender, { shouldValidate: true })
                   }
-                  className={`flex items-center space-x-2 border px-3 py-2 rounded-full transition-all text-left ${
+                  className={`px-5 py-3 rounded-full border text-sm font-medium transition-all text-center ${
                     currentGender === gender
-                      ? "bg-secondary border-primary/40 text-secondary-foreground font-semibold"
+                      ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card border-border text-foreground active:bg-accent/10"
                   }`}
                 >
-                  <Checkbox
-                    id={`gender-${gender}`}
-                    checked={currentGender === gender}
-                  />
-                  <span className="text-sm font-medium capitalize select-none">
-                    {gender.replace("_", " ")}
-                  </span>
-                </div>
+                  {gender
+                    .replace("_", " ")
+                    .replace(/\b\w/g, (c) => c.toUpperCase())}
+                </button>
               ))}
             </div>
             {errors.gender && (
@@ -337,7 +326,7 @@ export default function NewGamePage() {
         </section>
 
         {/* --- Sticky Footer Action --- */}
-        <div className="mt-4 pb-30 left-0 right-0 p-4 pt-4 bg-background/90 backdrop-blur-lg">
+        <div className="mt-4 pb-16 left-0 right-0 p-4 pt-4 bg-background/90 backdrop-blur-lg">
           <Button
             onClick={onSubmit}
             className="w-full h-14 text-lg font-bold rounded-(--radius)] shadow-lg shadow-primary/20"

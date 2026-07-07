@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import FilterPanel from "@player/components/SearchFiltersPanel/SearchFiltersPanel";
 import SearchBar from "@player/components/SearchBar/SearchBar";
-import { FilterState } from "@player/components/SearchFiltersPanel/SearchFiltersPanelData";
+import { FilterState } from "@player/components/SearchFiltersPanel/FormSetup";
 import { LocationSearchHook } from "@/app/(player)/hooks/LocationSearchHook";
 import { useMapContext } from "@/app/(player)/context/MapContext";
 
 export default function Home() {
   const defaultFilters: FilterState = {
-    sportTypes: [],
+    sports: [],
     distance: 10,
     ageGroups: [],
-    skillLevels: [],
+    skill_levels: [],
     genders: [],
   };
 
@@ -30,14 +30,11 @@ export default function Home() {
 
   const handleFilterClose = () => {
     setIsFilterOpen(false);
-    console.log(
-      filters.sportTypes,
-      filters.distance,
-      filters.ageGroups,
-      filters.skillLevels,
-      filters.genders,
-    );
   };
+
+  useEffect(() => {
+    console.log("🟢 The Parent Filters State ACTUALLY changed to:", filters);
+  }, [filters]);
 
   const handleTabChange = (tabId: string) => {
     // Navigation logic will be implemented later
