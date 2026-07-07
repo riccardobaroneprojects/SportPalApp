@@ -2,12 +2,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  sportOptions,
-  ageOptions,
-  skillOptions,
-  genderOptions,
-} from "@player/components/SearchFiltersPanel/SearchFiltersPanelData";
-import { Announcement } from "@/types/announcement";
+  formEnumOptions,
+  useAnnouncementForm,
+  AnnouncementFormValues,
+} from "./FormSetup";
+import { AnnouncementInsert } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,39 +19,25 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export default function NewGamePage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<Announcement>({
-    title: "",
-    location: "",
-    sport: "",
-    skillLevels: [],
-    ageGroups: [],
-    genders: [],
-    description: "",
-    maxPlayers: 5,
-  });
 
-  // Toggle function for multi-select arrays
-  const toggleSelection = (key: keyof Announcement, value: string) => {
-    setFormData((prev) => {
-      const currentValues = prev[key] as string[];
-      const newValues = currentValues.includes(value)
-        ? currentValues.filter((v) => v !== value)
-        : [...currentValues, value];
-      return { ...prev, [key]: newValues };
-    });
-  };
-
-  const handlePost = () => {
-    console.log("Saving Game State:", formData);
-    // Logic for Supabase or API call goes here
-  };
-
+  // Initialize Hooks and form essentials
+  const { announcementform, handleLocationSelect, onSubmit, errors } =
+    useAnnouncementForm();
+  const { register, setValue, watch } = announcementform;
   const searchHook = LocationSearchHook();
 
+  // initialize whatcers for UI updating
+  const currentSport = watch("sport");
+  const currentSkill = watch("skill_level");
+  const currentAge = watch("age");
+  const currentGender = watch("gender");
+  const currentMinPlayers = watch("min_players");
+  const currentMaxPlayers = watch("max_players");
+
   return (
-    <div className=" flex-1 flex-col bg-background  text-foreground p-4 pb-20 pointer-events-auto">
-      <header className="py-3 flex items-center justify-between">
-        {/* Left side: Titles */}
+    <div className="flex-1 flex-col bg-background text-foreground p-4 pb-20 pointer-events-auto">
+      <header className="py-3 flex items-center justify-between mb-2">
+        {/* Left side: Title */}
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">New Game</h1>
           <p className="text-muted-foreground mt-1">
@@ -72,27 +57,21 @@ export default function NewGamePage() {
         </Button>
       </header>
 
-      <div className="space-y-6">
-        {/* --- Section 1: Core Details --- */}
-        <section className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Game Title</Label>
-            <Input
-              id="title"
-              placeholder="e.g. Competitive 5v5 Basketball"
-              className="bg-card border-border rounded-full"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="space-y-2 relative">
-            <Label htmlFor="location">Location</Label>
+      {/* Form Sections Wrapper 🟢 Expanded to space-y-8 for more structural breathing room */}
+      <div className="space-y-8">
+        {/* --- Section 1: Core Details (Location & Description) --- */}
+        <section className="space-y-5">
+          {/* A. LOCATION COMPONENT */}
+          <div className="space-y-3 relative">
+            <Label
+              htmlFor="location"
+              className="text-base font-bold tracking-wide"
+            >
+              Location
+            </Label>
             <Input
               id="location"
-              placeholder="enter city..."
+              placeholder="Enter city..."
               className="bg-card border-border rounded-full"
               value={searchHook.query}
               onChange={(e) => searchHook.setQuery(e.target.value)}
@@ -109,8 +88,8 @@ export default function NewGamePage() {
                     <li
                       key={item.place_id}
                       onClick={() => {
-                        const loc = searchHook.selectLocation(item);
-                        setFormData({ ...formData, location: loc.name });
+                        handleLocationSelect(item);
+                        searchHook.selectLocation(item);
                       }}
                       className="p-4 hover:bg-primary/10 cursor-pointer text-sm border-b border-border last:border-none transition-colors"
                     >
@@ -120,147 +99,252 @@ export default function NewGamePage() {
                 </motion.ul>
               )}
             </AnimatePresence>
+
+            {errors.location_name && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.location_name.message}
+              </p>
+            )}
+          </div>
+
+          {/* B. DESCRIPTION COMPONENT */}
+          <div className="space-y-3">
+            <Label
+              htmlFor="description"
+              className="text-base font-bold tracking-wide"
+            >
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              placeholder="Tell players about the game, court surface, costs, etc..."
+              className="bg-card border-border rounded-2xl min-h-32 resize-none"
+              {...register("description")}
+            />
+            {errors.description && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.description.message}
+              </p>
+            )}
           </div>
         </section>
 
         {/* --- Section 2: Sport (Single Selection Radio-style) --- */}
         <section className="space-y-3">
-          <Label>Select Sport</Label>
+          <Label className="text-base font-bold tracking-wide">
+            Select Sport
+          </Label>
           <div className="grid grid-cols-2 gap-2">
-            {sportOptions.map((sport) => (
+            {formEnumOptions.sport.map((sport) => (
               <button
                 key={sport}
                 type="button"
-                onClick={() => setFormData({ ...formData, sport })}
+                onClick={() =>
+                  setValue("sport", sport, { shouldValidate: true })
+                }
                 className={`p-3 rounded-full border text-sm font-medium transition-all ${
-                  formData.sport === sport
+                  currentSport === sport
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card border-border text-foreground active:bg-accent/10"
                 }`}
               >
-                {sport}
+                {sport.charAt(0).toUpperCase() + sport.slice(1)}
               </button>
             ))}
           </div>
+
+          {errors.sport && (
+            <p className="text-sm text-destructive mt-1">
+              {errors.sport.message}
+            </p>
+          )}
         </section>
 
-        {/* --- Section 3: Skill Level (Multi-select Cards) --- */}
+        {/* --- Section 3: Skill Level --- */}
         <section className="space-y-3">
-          <Label>Allowed Skill Levels</Label>
+          <Label className="text-base font-bold tracking-wide">
+            Allowed Skill Levels
+          </Label>
           <div className="space-y-2">
-            {skillOptions.map((skill) => (
+            {formEnumOptions.skill.map((skill) => (
               <div
-                key={skill.label}
-                onClick={() => toggleSelection("skillLevels", skill.label)}
-                className={`flex items-center justify-between p-4 border rounded-full cursor-pointer transition-colors ${
-                  formData.skillLevels.includes(skill.label)
-                    ? "bg-secondary border-primary/40"
-                    : "bg-card border-border"
+                key={skill}
+                role="button"
+                tabIndex={0}
+                onClick={() =>
+                  setValue("skill_level", skill, { shouldValidate: true })
+                }
+                className={`w-full flex items-center justify-between p-4 border rounded-full text-left transition-all ${
+                  currentSkill === skill
+                    ? "bg-secondary border-primary/40 text-secondary-foreground font-semibold"
+                    : "bg-card border-border text-foreground active:bg-accent/10"
                 }`}
               >
-                <div>
-                  <p className="font-bold text-sm">{skill.label}</p>
-                  <p className="text-xs text-muted-foreground">{skill.desc}</p>
-                </div>
-                <Checkbox
-                  checked={formData.skillLevels.includes(skill.label)}
-                />
+                <div className="capitalize text-sm">{skill}</div>
+                <Checkbox checked={currentSkill === skill} />
               </div>
             ))}
           </div>
+
+          {errors.skill_level && (
+            <p className="text-sm text-destructive mt-1">
+              {errors.skill_level.message}
+            </p>
+          )}
         </section>
 
         {/* --- Section 4: Filters (Age & Gender) --- */}
-        <section className="grid grid-cols-1 gap-6">
+        <section className="flex flex-col gap-6">
+          {/* 1. AGE GROUPS SUB-SECTION */}
           <div className="space-y-3">
-            <Label>Age Groups</Label>
+            <Label className="text-base font-bold tracking-wide">
+              Age Groups
+            </Label>
             <div className="flex flex-wrap gap-2">
-              {ageOptions.map((age) => (
+              {formEnumOptions.age.map((age) => (
                 <div
                   key={age}
-                  className="flex items-center space-x-2 bg-card border border-border px-3 py-2 rounded-full"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setValue("age", age, { shouldValidate: true })}
+                  className={`flex items-center space-x-2 border px-3 py-2 rounded-full transition-all text-left ${
+                    currentAge === age
+                      ? "bg-secondary border-primary/40 text-secondary-foreground font-semibold"
+                      : "bg-card border-border text-foreground active:bg-accent/10"
+                  }`}
                 >
-                  <Checkbox
-                    id={`age-${age}`}
-                    checked={formData.ageGroups.includes(age)}
-                    onCheckedChange={() => toggleSelection("ageGroups", age)}
-                  />
-                  <label htmlFor={`age-${age}`} className="text-sm font-medium">
-                    {age}
-                  </label>
+                  <Checkbox id={`age-${age}`} checked={currentAge === age} />
+                  <span className="text-sm font-medium capitalize select-none">
+                    {age.replace("_", " - ")}
+                  </span>
                 </div>
               ))}
             </div>
+            {errors.age && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.age.message}
+              </p>
+            )}
           </div>
 
+          {/* 2. INCLUSIVITY (GENDER) SUB-SECTION */}
           <div className="space-y-3">
-            <Label>Inclusivity (Gender)</Label>
+            <Label className="text-base font-bold tracking-wide">
+              Inclusivity (Gender)
+            </Label>
             <div className="flex flex-wrap gap-2">
-              {genderOptions.map((gender) => (
+              {formEnumOptions.gender.slice(0, -1).map((gender) => (
                 <div
                   key={gender}
-                  className="flex items-center space-x-2 bg-card border border-border px-3 py-2 rounded-full"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    setValue("gender", gender, { shouldValidate: true })
+                  }
+                  className={`flex items-center space-x-2 border px-3 py-2 rounded-full transition-all text-left ${
+                    currentGender === gender
+                      ? "bg-secondary border-primary/40 text-secondary-foreground font-semibold"
+                      : "bg-card border-border text-foreground active:bg-accent/10"
+                  }`}
                 >
                   <Checkbox
                     id={`gender-${gender}`}
-                    checked={formData.genders.includes(gender)}
-                    onCheckedChange={() => toggleSelection("genders", gender)}
+                    checked={currentGender === gender}
                   />
-                  <label
-                    htmlFor={`gender-${gender}`}
-                    className="text-sm font-medium"
-                  >
-                    {gender}
-                  </label>
+                  <span className="text-sm font-medium capitalize select-none">
+                    {gender.replace("_", " ")}
+                  </span>
                 </div>
               ))}
             </div>
+            {errors.gender && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.gender.message}
+              </p>
+            )}
           </div>
         </section>
 
-        {/* --- Section 5: Player Capacity --- */}
-        <section className="space-y-4">
-          <div className="flex justify-between items-center">
-            <Label>Player Limit</Label>
-            <span className="text-primary font-bold bg-primary/10 px-3 py-1 rounded-full text-xs">
-              {formData.maxPlayers} players max
-            </span>
+        {/* --- Section 5: Player Capacity (Min & Max Sliders) --- */}
+        <section className="flex flex-col gap-6">
+          {/* A. MINIMUM PLAYERS SLIDER */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Label className="text-base font-bold tracking-wide">
+                Minimum Players
+              </Label>
+              <span className="text-primary font-bold bg-primary/10 px-3 py-1 rounded-full text-xs">
+                {currentMinPlayers || 2} players min
+              </span>
+            </div>
+            <Slider
+              min={2}
+              max={50}
+              step={1}
+              value={[currentMinPlayers || 2]}
+              onValueChange={(val) => {
+                const newMin = val[0];
+                setValue("min_players", newMin, { shouldValidate: true });
+
+                // auto adujst max player if min goes above it
+                if (newMin > (currentMaxPlayers || 2)) {
+                  setValue("max_players", newMin, { shouldValidate: true });
+                }
+              }}
+              className="py-4"
+            />
+
+            {errors.min_players && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.min_players.message}
+              </p>
+            )}
           </div>
-          <Slider
-            min={2}
-            max={50}
-            step={1}
-            value={[formData.maxPlayers]}
-            onValueChange={(val) =>
-              setFormData({ ...formData, maxPlayers: val[0] })
-            }
-            className="py-4"
-          />
+
+          {/* B. MAXIMUM PLAYERS LIMIT */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Label className="text-base font-bold tracking-wide">
+                Maximum Players
+              </Label>
+              <span className="text-primary font-bold bg-primary/10 px-3 py-1 rounded-full text-xs">
+                {currentMaxPlayers || 2} players max
+              </span>
+            </div>
+            <Slider
+              min={2}
+              max={50}
+              step={1}
+              value={[currentMaxPlayers || 2]}
+              onValueChange={(val) => {
+                const newMax = val[0];
+                setValue("max_players", newMax, { shouldValidate: true });
+
+                // auto adujst min player if max goes below it
+                if (newMax < (currentMinPlayers || 2)) {
+                  setValue("min_players", newMax, { shouldValidate: true });
+                }
+              }}
+              className="py-4"
+            />
+
+            {errors.max_players && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.max_players.message}
+              </p>
+            )}
+          </div>
         </section>
 
-        {/* --- Section 6: Additional Info --- */}
-        <section className="space-y-2">
-          <Label htmlFor="desc">Notes / Rules</Label>
-          <Textarea
-            id="desc"
-            placeholder="Bring a dark/light jersey, water, etc."
-            className="bg-card border-border rounded-(--radius)] min-h-30"
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
-          />
-        </section>
-      </div>
-
-      {/* --- Sticky Footer Action --- */}
-      <div className=" mt-4 pb-30 left-0 right-0 p-4 pt-4 bg-background/90 backdrop-blur-lg">
-        <Button
-          onClick={handlePost}
-          className="w-full h-14 text-lg font-bold rounded-(--radius)] shadow-lg shadow-primary/20"
-        >
-          Post Game
-        </Button>
+        {/* --- Sticky Footer Action --- */}
+        <div className="mt-4 pb-30 left-0 right-0 p-4 pt-4 bg-background/90 backdrop-blur-lg">
+          <Button
+            onClick={onSubmit}
+            className="w-full h-14 text-lg font-bold rounded-(--radius)] shadow-lg shadow-primary/20"
+          >
+            Post Game
+          </Button>
+        </div>
       </div>
     </div>
   );
