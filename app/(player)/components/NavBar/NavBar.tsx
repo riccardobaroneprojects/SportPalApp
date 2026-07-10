@@ -3,7 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { clientAuthGuard } from "@/Features/auth/Guards";
+import { clientAuthGuard } from "@/features/auth/Guards";
 import { NavItem, BottomNavProps, NAV_ITEMS } from "./NavBarData";
 
 export default function NavBar({ onTabChange }: BottomNavProps) {

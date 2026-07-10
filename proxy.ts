@@ -1,16 +1,11 @@
 // middleware.ts
 import { NextRequest, NextResponse } from "next/server";
-import { serverAuthGuard } from "@/features/auth/Guards"; 
+import { proxyAuthGuard } from "@/features/auth/Guards"; 
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // If Next.js runs this function, we ALREADY know it matched a protected route
-  const redirectResponse = serverAuthGuard(request);
-  
-  if (redirectResponse) {
-    return redirectResponse; // Bounce them to home page with ?next= parameter
-  }
-
-  return NextResponse.next(); // User logged in! Proceed seamlessly
+  const guardResponse = await proxyAuthGuard(request);
+  return guardResponse;
 }
 
 
@@ -20,5 +15,6 @@ export const config = {
     "/profile/:path*", 
     "/mygames/:path*",
     "/onboarding/:path*",
+    "/testPage/:path*",
   ],
 };
