@@ -1,20 +1,30 @@
 
 import { NextRequest, NextResponse } from "next/server";
-import createBrowserSupabaseClient from "@/supabase/createCLients/browserClient";
-import createProxySupabaseClient from "@/supabase/createCLients/proxyClient"
+import { SupabaseClient } from "@supabase/supabase-js";
+import createBrowserSupabaseClient from "@/supabase/createClients/browserClient";
+import createProxySupabaseClient from "@/supabase/createClients/proxyClient"
 
+
+interface GuardArgs {
+  request: NextRequest;
+  supabase: SupabaseClient;
+  response: NextResponse
+}
 /**
  *  * PROXY GUARD: Used inside root proxy.ts to protect server routes.
  * Returns a redirect response if the user is anonymous, otherwise returns null.
  */
-export async function proxyAuthGuard(request: NextRequest) {
-  const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-  
-  const supabase = createProxySupabaseClient(request, response);
+export async function proxyAuthGuard({ request, supabase, response }: GuardArgs) {
+
+  const currentPath = request.nextUrl.pathname;
+
+//Define pages that REQUIRE authentication
+  const protectedRoutes = ["/profile", "/mygames", "/onboarding", "/testPage"];
+  const isProtectedRoute = protectedRoutes.some(route => currentPath.startsWith(route));
+
+  if (!isProtectedRoute) {
+    return response;
+  }
 
   const { data: { user } } = await supabase.auth.getUser();
   const isLoggedIn = !!user;
@@ -23,7 +33,6 @@ export async function proxyAuthGuard(request: NextRequest) {
 
   // 1. Grab the URL the user was looking at right BEFORE this request
   const referer = request.headers.get("referer");
-  const currentPath = request.nextUrl.pathname;
 
   // 2. Default landing destination (Your Home Page)
   let redirectTarget = "/";

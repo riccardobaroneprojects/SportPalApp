@@ -1,6 +1,6 @@
 "use server";
 
-import createServerSupabaseClient  from "@/supabase/createCLients/serverClient"; 
+import createServerSupabaseClient  from "@/supabase/createClients/serverClient"; 
 import { redirect } from "next/navigation";
 
 export async function signInWithGoogle(redirectTo: string) {
@@ -21,6 +21,7 @@ export async function signInWithEmail(email: string, redirectTo: string) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: redirectTo },
+    
   });
 
   if (error) throw new Error(error.message);

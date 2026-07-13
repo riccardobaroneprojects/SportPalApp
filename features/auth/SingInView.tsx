@@ -12,7 +12,7 @@ import {
   executeEmailSignIn,
   executeGoogleSignIn,
   executeVerifyOtp,
-} from "./utils";
+} from "./utils/signInHandlers";
 
 export default function SignInView() {
   const router = useRouter();

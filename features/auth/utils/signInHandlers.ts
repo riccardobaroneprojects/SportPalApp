@@ -1,15 +1,8 @@
 "use client";
 
-import { signInWithEmail, signInWithGoogle, signInWithOTP } from "./actions";
+import { signInWithEmail, signInWithGoogle, signInWithOTP } from "../actions";
+import {buildRedirectUrl} from "./redirect";
 import { toast } from "sonner";
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-
-// Private helper to extract targets and build the callback URL
-const buildRedirectUrl = (searchParams: URLSearchParams): string => {
-  if (typeof window === "undefined") return "";
-  const nextTarget = searchParams.get("next") || "/";
-  return `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextTarget)}`;
-};
 
 interface GoogleSignInArgs {
   searchParams: URLSearchParams;
