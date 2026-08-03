@@ -1,9 +1,14 @@
 import { Tables, TablesInsert, TablesUpdate } from './supabase';
 
 // Player Table Types
-export type Player = Tables<'Player'>;
-export type PlayerInsert = TablesInsert<'Player'>;
-export type PlayerUpdate = TablesUpdate<'Player'>;
+export type Player = Tables<'Players'>;
+export type PlayerInsert = TablesInsert<'Players'>;
+export type PlayerUpdate = TablesUpdate<'Players'>;
+
+// Users table Types
+export type Users = Tables<'Users'>;
+export type UsersInsert = TablesInsert<'Users'>;
+export type UsersUpdate = TablesUpdate<'Users'>;
 
 // Player announcement Types
 export type Announcement = Tables<'Announcement'>;

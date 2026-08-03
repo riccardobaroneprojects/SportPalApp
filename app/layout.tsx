@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AuthListener } from "@/features/auth/AuthListener";
 import { Toaster } from "@/components/ui/sonner";
+import { OnboardingListener } from "@/features/onboarding/onboardingListener";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -44,6 +45,7 @@ export default function RootLayout({
         {" "}
         {children}
         <AuthListener />
+        <OnboardingListener />
         <Toaster position="top-center" richColors />
       </body>
     </html>

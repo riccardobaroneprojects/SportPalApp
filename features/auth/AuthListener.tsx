@@ -50,5 +50,5 @@ export function AuthListener() {
 
   if (!showAuthView) return null;
 
-  return <SignInView />;
+  return <SignInView isOpen={true} />;
 }

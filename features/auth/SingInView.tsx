@@ -12,14 +12,13 @@ import {
   executeEmailSignIn,
   executeGoogleSignIn,
   executeVerifyOtp,
-} from "./utils/signInHandlers";
+} from "../utils/signInHandlers";
 
-export default function SignInView() {
+export default function SignInView({ isOpen = false }: { isOpen?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const rawNext = searchParams.get("next") || "/";
-  const [otpCode, setOtpCode] = useState("");
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [step, setStep] = useState<"email" | "code">("email");
   const [code, setCode] = useState("");
@@ -28,8 +27,6 @@ export default function SignInView() {
   const [loading, setLoading] = useState(false);
 
   // this check trigger on remount (every time a new url is pushed)
-  const isOpen = searchParams.get("reqAuth") === "true";
-
   const handleGoogleSignIn = () => {
     executeGoogleSignIn({ searchParams, setLoading });
   };

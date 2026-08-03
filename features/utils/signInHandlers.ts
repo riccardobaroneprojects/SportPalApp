@@ -1,6 +1,6 @@
 "use client";
 
-import { signInWithEmail, signInWithGoogle, signInWithOTP } from "../actions";
+import { signInWithEmail, signInWithGoogle, signInWithOTP } from "../auth/actions";
 import {buildRedirectUrl} from "./redirect";
 import { toast } from "sonner";
 

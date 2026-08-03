@@ -28,16 +28,9 @@ export async function proxyAuthGuard({ request, supabase, response }: GuardArgs)
 
   const { data: { user } } = await supabase.auth.getUser();
   const isLoggedIn = !!user;
-
   if (isLoggedIn) return response;
-
-  // 1. Grab the URL the user was looking at right BEFORE this request
   const referer = request.headers.get("referer");
-
-  // 2. Default landing destination (Your Home Page)
   let redirectTarget = "/";
-
-  // 3. Contextual Check: If they were already navigating on the map, keep them there!
   if (referer) {
     const refererUrl = new URL(referer);
     if (refererUrl.pathname === "/map") {

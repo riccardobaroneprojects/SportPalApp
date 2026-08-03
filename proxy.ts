@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import createProxySupabaseClient from "@/supabase/createClients/proxyClient";
 import { proxyAuthGuard } from "@/features/auth/Guards"; 
-import { onboardingCheck } from "./features/auth/utils/checkOnboarding";
+import { onboardingCheck } from "./features/utils/checkOnboarding";
 
 
 export async function proxy(request: NextRequest) {
