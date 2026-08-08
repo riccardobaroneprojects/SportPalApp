@@ -30,7 +30,7 @@ export const announcementFormSchema = z
       message: "Latitude must be a valid number",
     }),
     longitude: z.number({
-      message: "Latitude must be a valid number",
+      message: "Longitude must be a valid number",
     }),
     max_players: z
       .number()
@@ -52,7 +52,7 @@ export const announcementFormSchema = z
 // 3. Type inference exported for use elsewhere if needed
 export type AnnouncementFormValues = z.infer<typeof announcementFormSchema>;
 
-// mapping of enum types for mapping the ui fields
+// mapping of enum types for mapping the ui fields (not required by zod and reactHookForm)
 export const formEnumOptions = {
   sport: announcementFormSchema.shape.sport.options,
   skill: announcementFormSchema.shape.skill_level.options,

@@ -22,7 +22,7 @@ export async function onboardingCheck({ request, supabase, response }: Onboardin
     return response; 
   }
   const { data, error } = await supabase
-    .from('Users')
+    .from('users')
     .select('account_type')
     .eq('id', user.id)
     .single();
