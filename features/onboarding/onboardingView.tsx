@@ -6,7 +6,7 @@ import { User, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-// Import your separate form components
+// Import  separate form components
 import PlayerOnboardingForm from "./playerOnboardingForm";
 import BusinessOnboardingForm from "./businessOnboardingForm";
 

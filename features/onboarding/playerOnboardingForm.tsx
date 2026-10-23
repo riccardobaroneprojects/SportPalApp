@@ -21,7 +21,6 @@ import {
 } from "./playerOnboardingFormSetup";
 import { LocationSearchHook } from "@/app/(player)/hooks/LocationSearchHook";
 import { AnimatePresence, motion } from "framer-motion";
-import { LocationIQResult } from "@/app/(player)/components/SearchBar/SearchBarData";
 
 interface PlayerOnboardingFormProps {
   isVisible: boolean;

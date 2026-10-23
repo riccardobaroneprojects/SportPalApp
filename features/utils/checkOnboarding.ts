@@ -21,19 +21,9 @@ export async function onboardingCheck({ request, supabase, response }: Onboardin
     console.log("Onboarding check passed: No user logged in");
     return response; 
   }
-  const { data, error } = await supabase
-    .from('users')
-    .select('account_type')
-    .eq('id', user.id)
-    .single();
+    const accountType = user.user_metadata?.account_type;
 
-  if (error || !data) {
-    console.log("Onboarding check passed: Error fetching user profile or no DB record found", error);
-    return response;
-  }
-
-  const needsOnboarding = !data.account_type;
-  console.log(`User onboarding status -> Needs onboarding: ${needsOnboarding}. Account type is:`, data.account_type);
+    const needsOnboarding = !accountType;
 
   if (needsOnboarding) {
     url.searchParams.set('reqOnboarding', 'true');

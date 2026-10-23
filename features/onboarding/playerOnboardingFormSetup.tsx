@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { PlayerInsert, Player_sportsInsert } from "@/types";
 import createBrowserSupabaseClient from "@/supabase/createClients/browserClient";
 import { LocationIQResult } from "@/app/(player)/components/SearchBar/SearchBarData";
+import { useRouter, usePathname } from "next/navigation";
 
 // 1. Enums matching Supabase
 export const genderEnum = z.enum([
@@ -144,7 +144,8 @@ export function usePlayerOnboardingForm() {
       sports: [],
     },
   });
-
+  const router = useRouter();
+  const pathname = usePathname();
   const { errors, isSubmitting } = playerForm.formState;
 
   const handleLocationSelect = (item: LocationIQResult) => {
@@ -161,8 +162,70 @@ export function usePlayerOnboardingForm() {
 
   // Logs the final validated data
   const onSubmit = async (data: PlayerOnboardingFormValues) => {
-    console.log("=== PLAYER ONBOARDING FORM SUBMITTED ===");
-    console.log(data);
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error("Authentication error: No user found", userError);
+      return;
+    }
+
+    const { error: playerError } = await supabase.from("players").insert({
+      id: user.id, // Ties the row to auth.users
+      first_name: data.first_name,
+      surname: data.surname,
+      username: data.username,
+      birth_date: data.birth_date,
+      gender: data.gender,
+      bio: data.bio,
+      home: data.home,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      avatar_url: data.avatar_url,
+      // terms_and_age must allways be accepted so we can safely insert the timestamp here as we know if execution got here they where accepted
+      terms_and_age_accepted_at: new Date().toISOString(),
+    });
+
+    if (playerError) {
+      console.error("Failed to insert player profile:", playerError.message);
+      return;
+    }
+
+    // 3. Bulk insert sports preferences (if the user selected any)
+    if (data.sports && data.sports.length > 0) {
+      const sportsToInsert = data.sports.map((sportItem) => ({
+        player_id: user.id,
+        sport: sportItem.sport,
+        skill_level: sportItem.skill_level,
+      }));
+
+      const { error: sportsError } = await supabase
+        .from("player_sports")
+        .insert(sportsToInsert);
+
+      if (sportsError) {
+        console.error(
+          "Failed to insert sports preferences:",
+          sportsError.message,
+        );
+        return;
+      }
+    }
+
+    // 4. Update the user metadata so your onboarding proxy/guard clears them
+    const { error: metaError } = await supabase.auth.updateUser({
+      data: { account_type: "player" },
+    });
+
+    if (metaError) {
+      console.error("Failed to update user metadata:", metaError.message);
+      return;
+    }
+
+    // usePathname() stripper reqOnboarding parameters so the onboardin view doesn't show up on refresh
+    router.replace(pathname);
+    router.refresh();
   };
 
   return {

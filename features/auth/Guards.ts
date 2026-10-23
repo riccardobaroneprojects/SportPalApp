@@ -19,7 +19,7 @@ export async function proxyAuthGuard({ request, supabase, response }: GuardArgs)
   const currentPath = request.nextUrl.pathname;
 
 //Define pages that REQUIRE authentication
-  const protectedRoutes = ["/profile", "/mygames", "/onboarding", "/testPage"];
+  const protectedRoutes = ["/profile", "/mygames", "/onboarding", "/testPage", "/newGame"];
   const isProtectedRoute = protectedRoutes.some(route => currentPath.startsWith(route));
 
   if (!isProtectedRoute) {

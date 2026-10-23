@@ -10,11 +10,6 @@ export type Player_sports = Tables<'player_sports'>;
 export type Player_sportsInsert = TablesInsert<'player_sports'>;
 export type Player_sportsUpdate = TablesUpdate<'player_sports'>;
 
-// Users table Types
-export type Users = Tables<'users'>;
-export type UsersInsert = TablesInsert<'users'>;
-export type UsersUpdate = TablesUpdate<'users'>;
-
 // Player announcement Types
 export type Announcement = Tables<'announcement'>;
 export type AnnouncementInsert = TablesInsert<'announcement'>;

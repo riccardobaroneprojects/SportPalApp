@@ -32,10 +32,6 @@ export default function Home() {
     setIsFilterOpen(false);
   };
 
-  useEffect(() => {
-    console.log("🟢 The Parent Filters State ACTUALLY changed to:", filters);
-  }, [filters]);
-
   const handleTabChange = (tabId: string) => {
     // Navigation logic will be implemented later
   };

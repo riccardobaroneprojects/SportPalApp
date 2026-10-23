@@ -1,7 +1,5 @@
-DROP TABLE IF EXISTS public.announcement_members;
+-- 1. Drop the trigger from the auth.users table
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
-CREATE TABLE public.announcement_members (
-  announcement_id uuid REFERENCES public.announcement(id) ON DELETE CASCADE,
-  player_id uuid REFERENCES public.players(id) ON DELETE CASCADE,
-  PRIMARY KEY (announcement_id, player_id)
-);
+-- 2. Drop the associated trigger function
+DROP FUNCTION IF EXISTS public.handle_new_user_signup();

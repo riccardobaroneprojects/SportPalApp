@@ -45,16 +45,12 @@ export async function signInWithOTP(email: string, token: string, nextTarget: st
     because signin in with OTP doesn't trigger a full page refresh meaning the proxy won't retrigger
     signin in with email or google works fine becasue the user has to leave the webiste temporarly to sign in 
     meaning the proxy will trigger upon redirect back to webiste*/} 
-  const { data: userProfile } = await supabase
-    .from("Users")
-    .select("account_type")
-    .eq("id", data.user.id)
-    .single();
+  const accountType = data.user.user_metadata?.account_type;
 
  
   const targetUrl = new URL(nextTarget, "http://localhost:3000");
 
-  if (!userProfile?.account_type) {
+  if (!accountType) {
     targetUrl.searchParams.set("reqOnboarding", "true");
   }
 
