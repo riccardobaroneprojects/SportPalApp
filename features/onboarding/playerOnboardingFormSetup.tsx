@@ -223,7 +223,7 @@ export function usePlayerOnboardingForm() {
       return;
     }
 
-    // usePathname() stripper reqOnboarding parameters so the onboardin view doesn't show up on refresh
+    // usePathname() stripped reqOnboarding parameters so the onboarding view doesn't show up on refresh
     router.replace(pathname);
     router.refresh();
   };

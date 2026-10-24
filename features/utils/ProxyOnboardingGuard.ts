@@ -7,7 +7,7 @@ interface OnboardingArgs {
   response: NextResponse;
 }
 
-export async function onboardingCheck({ request, supabase, response }: OnboardingArgs) {
+export async function ProxyOnboardingGuard({ request, supabase, response }: OnboardingArgs) {
   const url = request.nextUrl.clone();
   
   // 1. Prevent infinite loops if query param is already active

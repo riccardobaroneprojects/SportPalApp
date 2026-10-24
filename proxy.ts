@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import createProxySupabaseClient from "@/supabase/createClients/proxyClient";
 import { proxyAuthGuard } from "@/features/auth/Guards"; 
-import { onboardingCheck } from "./features/utils/checkOnboarding";
+import { ProxyOnboardingGuard } from "./features/utils/ProxyOnboardingGuard";
+import { ProxyRedirectGuard } from "./proxyGuards/proxyRedirectGaurd";
 
 
 export async function proxy(request: NextRequest) {
@@ -14,19 +15,29 @@ export async function proxy(request: NextRequest) {
   });
 
   const supabase = createProxySupabaseClient(request, response);
-  const guardResponse = await proxyAuthGuard({ request, supabase, response });
 
-  if (guardResponse.status === 307 || guardResponse.status === 308) {
-    return guardResponse;
+  //check for requests who requires user to be signed in
+  const authResponse = await proxyAuthGuard({ request, supabase, response });
+
+  if (authResponse.status === 307 || authResponse.status === 308) {
+    return authResponse;
   }
 
-  const onboardingResponse = await onboardingCheck({ request, supabase, response });
+  // check if user needs to complete onboarding
+  const onboardingResponse = await ProxyOnboardingGuard({ request, supabase, response });
   if (onboardingResponse !== response) {
     return onboardingResponse; // Exits early if onboarding check forces a redirect
   }
 
+  const rootRedirect = await ProxyRedirectGuard({ request, supabase, response });
+  if (rootRedirect) {
+    return rootRedirect;
+  }
+
   return response
 }
+
+  
 
 
 // Next.js will ONLY run the middleware function above for these URLs.
