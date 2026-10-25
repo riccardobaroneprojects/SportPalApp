@@ -215,7 +215,11 @@ export function usePlayerOnboardingForm() {
 
     // 4. Update the user metadata so your onboarding proxy/guard clears them
     const { error: metaError } = await supabase.auth.updateUser({
-      data: { account_type: "player" },
+      data: {
+        account_type: "player",
+        latitude: data.latitude,
+        longitude: data.longitude,
+      },
     });
 
     if (metaError) {

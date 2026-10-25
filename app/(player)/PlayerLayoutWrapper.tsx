@@ -3,18 +3,39 @@
 "use client";
 
 import NavBar from "@/app/(player)/components/NavBar/NavBar";
-import MapBox from "@/app/(player)/components/MapBox/MapBox";
 import { useState } from "react";
 import { FeatureCollection } from "geojson";
 import MapContext from "@/app/(player)/context/MapContext";
+import dynamic from "next/dynamic";
+
+const MapBox = dynamic(
+  () => import("@/app/(player)/components/MapBox/MapBox"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10">
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground font-medium">
+            Initializing map...
+          </p>
+        </div>
+      </div>
+    ),
+  },
+);
 
 /* this wrapper orchestrates the entire palyer-side app, used becasue we can levearage state lifting through "use client" */
 
+type Props = {
+  children: React.ReactNode;
+  initialCenter?: { lat: number; lon: number } | null;
+};
+
 export default function PlayerLayoutWrapper({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  initialCenter,
+}: Props) {
   const [locationData, setLocationData] = useState<FeatureCollection | null>(
     null,
   );
@@ -29,7 +50,11 @@ export default function PlayerLayoutWrapper({
       >
         {/* LAYER 0: The Map (Fixed in background) */}
         <div className="fixed inset-0 z-0 h-screen w-screen">
-          <MapBox data={locationData} center={mapCenter} />
+          <MapBox
+            data={locationData}
+            initialCenter={initialCenter}
+            center={mapCenter}
+          />
         </div>
 
         {/* LAYER 1: The Content (Scrolls over the map) */}

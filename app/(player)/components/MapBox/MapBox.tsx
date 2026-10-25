@@ -7,11 +7,16 @@ import { FeatureCollection } from "geojson";
 
 type Props = {
   data: FeatureCollection | null;
+  initialCenter?: { lat: number; lon: number } | null;
   center?: { lat: number; lon: number } | null;
 };
 
-export default function MapBox({ data, center }: Props) {
+export default function MapBox({ data, initialCenter, center }: Props) {
   const mapRef = useRef<MapRef>(null);
+
+  // initial location is take from user's home location, if not signed in defaults to london
+  const defaultLatitude = initialCenter?.lat ?? 51.5072;
+  const defaultLongitude = initialCenter?.lon ?? -0.1276;
 
   // Smoothly move the camera when the center coordinate changes
   useEffect(() => {
@@ -33,8 +38,8 @@ export default function MapBox({ data, center }: Props) {
         logoPosition="top-right"
         attributionControl={false}
         initialViewState={{
-          longitude: -0.1276,
-          latitude: 51.5072,
+          longitude: defaultLongitude,
+          latitude: defaultLatitude,
           zoom: 12,
         }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
