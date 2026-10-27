@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import createBrowserSupabaseClient from "@/supabase/createClients/browserClient";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { clientAuthGuard } from "@/features/auth/Guards";
@@ -22,22 +24,50 @@ export default function NavBar({ onTabChange }: BottomNavProps) {
     [...NAV_ITEMS]
       .sort((a, b) => b.href.length - a.href.length)
       .find((item) => {
+        if (item.id === "profile") {
+          return pathname.startsWith("/profile/");
+        }
+        if (!item.href || item.href === "#") return false;
         if (item.href === "/") return pathname === "/";
         return pathname.startsWith(item.href);
       })?.id || "map";
 
-  const handleTabClick = (item: NavItem) => {
+  const handleTabClick = async (item: NavItem) => {
     onTabChange?.(item.id);
 
-    // if not signed in blocks the redirect
-    if (item.requiresAuth) {
-      const userIsSignedIn = clientAuthGuard(router, pathname, item.href);
-      if (!userIsSignedIn) return;
+    // 2. Handle Profile Tab completely independently
+    if (item.id === "profile") {
+      const supabase = createBrowserSupabaseClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const username = user?.user_metadata?.username;
+
+      if (!username) {
+        router.push("/map?reqAuth=true");
+        return;
+      }
+
+      const targetPath = `/profile/${username}`;
+
+      if (item.requiresAuth) {
+        const userIsSignedIn = clientAuthGuard(router, pathname, targetPath);
+        if (!userIsSignedIn) return;
+      }
+
+      router.push(targetPath);
+      return;
     }
 
-    router.push(item.href);
+    // 3. Handle Standard Tabs safely
+    if (item.href && item.href !== "#") {
+      if (item.requiresAuth) {
+        const userIsSignedIn = clientAuthGuard(router, pathname, item.href);
+        if (!userIsSignedIn) return;
+      }
+      router.push(item.href);
+    }
   };
-
   return (
     <nav className=" fixed bottom-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-md border-t border-border pb-safe">
       <div className="flex items-center h-20 justify-around px-2 pt-2 md:py-3 max-w-md mx-auto">

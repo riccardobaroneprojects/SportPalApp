@@ -20,6 +20,6 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "My Games", label: "My Games", icon: Calendar, href: "/testPage", requiresAuth: true },
   {id: "new game", label: "New Game", icon: PlusSquare, href: "/newGame", requiresAuth: true},
   { id: "map", label: "Map", icon: Map, href: "/map", requiresAuth: false },
-  { id: "profile", label: "Profile", icon: User, href: "/profile", requiresAuth: true },
+  { id: "profile", label: "Profile", icon: User, href: "#", requiresAuth: true },
  
 ];

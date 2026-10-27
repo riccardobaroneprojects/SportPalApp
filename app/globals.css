@@ -50,7 +50,7 @@
 
 :root {
   /* --- Background & Foreground --- */
-  --background: oklch(0.99 0.01 174);       /* Very Light Teal-White */
+  --background:#fafafa;       /* Very Light Teal-White */
   --foreground: #0f172a;                    /* Slate 900 (From Screenshot) */
 
   /* --- Cards & Popovers --- */
@@ -182,4 +182,5 @@ main:has(.h-dvh) {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 

@@ -219,6 +219,7 @@ export function usePlayerOnboardingForm() {
         account_type: "player",
         latitude: data.latitude,
         longitude: data.longitude,
+        username: data.username,
       },
     });
 
