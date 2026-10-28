@@ -1,7 +1,7 @@
 import { getPlayerByUsername } from "@/app/(player)/services/getPlayerByUsername";
 import createServerSupabaseClient from "@/supabase/createClients/serverClient";
 import { notFound } from "next/navigation";
-import { MapPin, Trophy, UserCheck, Activity } from "lucide-react";
+import { MapPin, Trophy, UserCheck, Activity, Calendar } from "lucide-react"; // Added Calendar icon
 
 interface PageProps {
   params: Promise<{ username: string }>;
@@ -41,10 +41,19 @@ export default async function UserProfilePage({ params }: PageProps) {
   // Extract just the city from home (e.g., "Winchester, Hampshire..." -> "Winchester")
   const city = player.home ? player.home.split(",")[0].trim() : null;
 
+  // Format "Joined Month Year" (e.g., "Joined October 2026")
+  // Falls back to player.created_at or uses a safe fallback if null
+  const joinedDateStr = player.terms_and_age_accepted_at
+    ? new Date(player.terms_and_age_accepted_at).toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      })
+    : null;
+
   return (
     <div className="relative z-10 flex min-h-screen w-full flex-col bg-background text-foreground pb-24 pointer-events-auto">
       {/* 1. Full-Width Edge-to-Edge Gradient Banner */}
-      <div className="w-full h-44 bg-gradient-to-r from-primary via-primary/80 to-secondary relative px-4 pt-4 shadow-inner">
+      <div className="w-full h-44 bg-gradient-to-r from-primary via-primary/85 to-secondary relative px-4 pt-4 shadow-inner">
         {/* Owner Badge */}
         {isOwner && (
           <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-md text-primary text-xs font-semibold px-2.5 py-1 rounded-full border border-border shadow-sm flex items-center gap-1.5">
@@ -79,13 +88,22 @@ export default async function UserProfilePage({ params }: PageProps) {
             @{player.username}
           </p>
 
-          {/* City Location Chip */}
-          {city && (
-            <div className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted border border-border/60 px-3 py-1 rounded-full">
-              <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span>{city}</span>
-            </div>
-          )}
+          {/* Metadata Row: City & Joined Date */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
+            {city && (
+              <div className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted border border-border/60 px-3 py-1 rounded-full">
+                <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>{city}</span>
+              </div>
+            )}
+
+            {joinedDateStr && (
+              <div className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted border border-border/60 px-3 py-1 rounded-full">
+                <Calendar className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Joined {joinedDateStr}</span>
+              </div>
+            )}
+          </div>
 
           {/* Bio */}
           {player.bio && (

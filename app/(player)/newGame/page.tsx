@@ -15,8 +15,14 @@ export default function NewGamePage() {
   const router = useRouter();
 
   // Initialize Hooks and form essentials
-  const { announcementform, handleLocationSelect, onSubmit, errors } =
-    useAnnouncementForm();
+  const {
+    announcementform,
+    handleLocationSelect,
+    onSubmit,
+    errors,
+    toast,
+    setToast,
+  } = useAnnouncementForm();
   const { register, setValue, watch } = announcementform;
   const searchHook = LocationSearchHook();
 
@@ -30,6 +36,28 @@ export default function NewGamePage() {
 
   return (
     <div className="flex-1 flex-col bg-background text-foreground p-4 pb-20 pointer-events-auto">
+      {toast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm px-4">
+          <div
+            className={`p-4 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xl transition-all animate-in fade-in slide-in-from-top-4 ${
+              toast.type === "success"
+                ? "bg-secondary text-secondary-foreground border border-secondary-foreground/20 shadow-secondary/10"
+                : "bg-destructive text-destructive-foreground border border-destructive/20 shadow-destructive/10"
+            }`}
+          >
+            <span>{toast.message}</span>
+            {/* Optional: You can keep the 'X' or delete this button entirely if you want it to auto-disappear 100% on its own */}
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              className="ml-3 opacity-80 hover:opacity-100 font-bold text-sm"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className="py-3 flex items-center justify-between mb-2">
         {/* Left side: Title */}
         <div>
@@ -51,7 +79,7 @@ export default function NewGamePage() {
         </Button>
       </header>
 
-      {/* Form Sections Wrapper 🟢 Expanded to space-y-8 for more structural breathing room */}
+      {/* Form Sections Wrapper  Expanded to space-y-8 for more structural breathing room */}
       <div className="space-y-8">
         {/* --- Section 1: Core Details (Location & Description) --- */}
         <section className="space-y-5">

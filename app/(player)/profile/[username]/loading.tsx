@@ -15,8 +15,11 @@ export default function ProfileLoading() {
           <div className="h-6 w-36 bg-muted rounded-md mb-2" />
           <div className="h-4 w-24 bg-muted/60 rounded-md mb-3" />
 
-          {/* City Location Chip Skeleton */}
-          <div className="h-6 w-28 bg-muted/80 rounded-full mb-3" />
+          {/* Metadata Row: City & Joined Date Skeletons */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5 mb-3">
+            <div className="h-6 w-28 bg-muted/80 rounded-full" />
+            <div className="h-6 w-32 bg-muted/80 rounded-full" />
+          </div>
 
           {/* Bio Skeleton */}
           <div className="space-y-2 w-full max-w-xs mt-3">

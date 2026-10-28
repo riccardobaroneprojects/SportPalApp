@@ -1,7 +1,11 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AnnouncementInsert } from "@/types";
+import createBrowserSupabaseClient from "@/supabase/createClients/browserClient";
 
 // 1. Enums matching Supabase
 const ageGroupEnum = z.enum(["18_29", "30_39", "40_49", "50_plus", "any"]);
@@ -78,12 +82,20 @@ export function useAnnouncementForm() {
       latitude: undefined as unknown as number,
       longitude: undefined as unknown as number,
       max_players: 2,
+      min_players: 2,
       sport: "football",
       skill_level: "beginner",
       age: "any",
       gender: "any",
     },
   });
+
+  const router = useRouter();
+  // Feedback Toast States
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const handleLocationSelect = (item: LocationIQResult) => {
     announcementform.setValue("location_name", item.display_name, {
@@ -98,13 +110,44 @@ export function useAnnouncementForm() {
   };
 
   const onSubmit = async (data: AnnouncementFormValues) => {
-    // if execution arrives here zod has validated all the fields
     try {
-      // add Supabase insert operation when ready
-      console.log("Safe data heading straight to Supabase:", data);
+      const supabase = createBrowserSupabaseClient();
+
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      // Satisfies TypeScript: guarantees 'user' is not null for the rest of the function
+      if (!user || authError) {
+        throw new Error("You must be logged in to create an announcement.");
+      }
+
+      const { error: insertError } = await supabase
+        .from("announcement")
+        .insert({
+          ...data,
+          owner: user.id, // TypeScript now knows user.id is 100% defined!
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      setToast({
+        type: "success",
+        message: "Game successfully created!",
+      });
       announcementform.reset();
-    } catch (error) {
-      console.error(error);
+      setTimeout(() => {
+        router.back();
+      }, 1500);
+    } catch (error: any) {
+      // Show Error Toast
+      setToast({
+        type: "error",
+        message: error.message || "Something went wrong. Please try again.",
+      });
     }
   };
 
@@ -113,5 +156,7 @@ export function useAnnouncementForm() {
     handleLocationSelect,
     onSubmit: announcementform.handleSubmit(onSubmit),
     errors: announcementform.formState.errors,
+    toast,
+    setToast,
   };
 }
